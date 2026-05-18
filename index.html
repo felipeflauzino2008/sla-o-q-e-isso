@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Captain Marvel Energy Effect</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  width:100%;
+  height:100vh;
+  overflow:hidden;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  background:linear-gradient(45deg,#d41e31,#491f8f);
+
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+/* =========================
+   CENA
+========================= */
+
+.scene{
+  position:relative;
+  width:100%;
+  height:100vh;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  overflow:hidden;
+}
+
+/* =========================
+   LUZ AMBIENTE
+========================= */
+
+.ambient-light{
+  position:absolute;
+
+  width:900px;
+  height:900px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle,
+    rgba(255,180,0,.18) 0%,
+    rgba(255,80,0,.12) 30%,
+    rgba(0,120,255,.10) 55%,
+    transparent 75%);
+
+  filter:blur(90px);
+
+  animation:ambientPulse 7s ease-in-out infinite;
+}
+
+/* =========================
+   REFLEXO NO CHÃO
+========================= */
+
+.floor-glow{
+  position:absolute;
+  bottom:-120px;
+
+  width:700px;
+  height:220px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle,
+    rgba(255,180,0,.45),
+    rgba(255,0,0,.18),
+    transparent 70%);
+
+  filter:blur(60px);
+
+  transform:rotateX(80deg);
+
+  animation:floorPulse 5s ease-in-out infinite;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.hero-wrapper{
+  position:relative;
+
+  width:430px;
+  height:720px;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  transform-style:preserve-3d;
+  perspective:1400px;
+
+  transition:transform .15s ease-out;
+}
+
+/* =========================
+   GLOW
+========================= */
+
+.hero-glow{
+  position:absolute;
+
+  width:80%;
+  height:85%;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle,
+    rgba(255,220,100,.45),
+    rgba(255,100,0,.20),
+    rgba(0,120,255,.15),
+    transparent 70%);
+
+  filter:blur(50px);
+
+  animation:glowPulse 4s ease-in-out infinite;
+}
+
+/* =========================
+   PERSONAGEM
+========================= */
+
+.hero{
+  position:relative;
+  z-index:10;
+
+  width:100%;
+  height:auto;
+
+  pointer-events:none;
+  user-select:none;
+
+  transform-style:preserve-3d;
+
+  animation:idleFloat 5s ease-in-out infinite;
+
+  transition:
+    transform .15s ease-out,
+    filter .25s ease;
+}
+
+/* =========================
+   PARTÍCULAS
+========================= */
+
+.particles{
+  position:absolute;
+  inset:0;
+
+  pointer-events:none;
+  z-index:5;
+}
+
+.particle{
+  position:absolute;
+
+  border-radius:50%;
+
+  background:orange;
+
+  box-shadow:
+    0 0 10px currentColor,
+    0 0 20px currentColor,
+    0 0 40px currentColor;
+
+  animation:
+    particleMove linear forwards,
+    flicker 2s infinite;
+}
+
+/* =========================
+   ANIMAÇÕES
+========================= */
+
+@keyframes idleFloat{
+
+  0%,100%{
+    transform:translateY(0px);
+  }
+
+  50%{
+    transform:translateY(-10px);
+  }
+
+}
+
+@keyframes glowPulse{
+
+  0%,100%{
+    transform:scale(1);
+    opacity:.75;
+  }
+
+  50%{
+    transform:scale(1.08);
+    opacity:1;
+  }
+
+}
+
+@keyframes ambientPulse{
+
+  0%,100%{
+    transform:scale(1);
+    opacity:.7;
+  }
+
+  50%{
+    transform:scale(1.1);
+    opacity:1;
+  }
+
+}
+
+@keyframes floorPulse{
+
+  0%,100%{
+    opacity:.45;
+    transform:rotateX(80deg) scale(1);
+  }
+
+  50%{
+    opacity:.8;
+    transform:rotateX(80deg) scale(1.1);
+  }
+
+}
+
+@keyframes particleMove{
+
+  from{
+    transform:
+      translateY(0px)
+      scale(1);
+
+    opacity:1;
+  }
+
+  to{
+    transform:
+      translateY(-90px)
+      scale(0);
+
+    opacity:0;
+  }
+
+}
+
+@keyframes flicker{
+
+  0%,100%{
+    opacity:1;
+  }
+
+  50%{
+    opacity:.4;
+  }
+
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+
+@media(max-width:768px){
+
+  .hero-wrapper{
+    width:320px;
+    height:560px;
+  }
+
+  .ambient-light{
+    width:600px;
+    height:600px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="scene">
+
+  <div class="ambient-light"></div>
+
+  <div class="floor-glow"></div>
+
+  <div class="hero-wrapper" id="heroWrapper">
+
+    <div class="particles" id="particles"></div>
+
+    <div class="hero-glow"></div>
+
+    <!-- TROQUE O SRC PELA SUA IMAGEM -->
+    <img
+      src="captain-marvel.png"
+      class="hero"
+      id="hero"
+      alt="Capitã Marvel"
+    >
+
+  </div>
+
+</div>
+
+<script>
+
+const wrapper = document.getElementById("heroWrapper");
+const hero = document.getElementById("hero");
+const particlesContainer = document.getElementById("particles");
+
+let mouseInside = false;
+
+/* =========================
+   CRIAR PARTÍCULA
+========================= */
+
+function createParticle(x,y){
+
+  const particle = document.createElement("div");
+
+  particle.classList.add("particle");
+
+  const colors = [
+    "#ffd000",
+    "#ff7b00",
+    "#ff3c00"
+  ];
+
+  const color =
+    colors[Math.floor(Math.random() * colors.length)];
+
+  const size =
+    Math.random() * 10 + 4;
+
+  particle.style.background = color;
+  particle.style.color = color;
+
+  particle.style.width = `${size}px`;
+  particle.style.height = `${size}px`;
+
+  particle.style.left = `${x}px`;
+  particle.style.top = `${y}px`;
+
+  particle.style.animationDuration =
+    `${Math.random() * 2 + 1}s`;
+
+  particlesContainer.appendChild(particle);
+
+  setTimeout(()=>{
+    particle.remove();
+  },3000);
+
+}
+
+/* =========================
+   PARTÍCULAS DAS MÃOS
+========================= */
+
+function spawnHandParticles(){
+
+  if(!mouseInside) return;
+
+  const rect =
+    wrapper.getBoundingClientRect();
+
+  /* mão esquerda */
+
+  createParticle(
+    rect.width * 0.25 + Math.random() * 45,
+    rect.height * 0.68 + Math.random() * 35
+  );
+
+  /* mão direita */
+
+  createParticle(
+    rect.width * 0.72 + Math.random() * 45,
+    rect.height * 0.68 + Math.random() * 35
+  );
+
+  requestAnimationFrame(spawnHandParticles);
+
+}
+
+/* =========================
+   MOVIMENTO 3D
+========================= */
+
+wrapper.addEventListener("mousemove",(e)=>{
+
+  mouseInside = true;
+
+  const rect =
+    wrapper.getBoundingClientRect();
+
+  const x =
+    e.clientX - rect.left;
+
+  const y =
+    e.clientY - rect.top;
+
+  const centerX =
+    rect.width / 2;
+
+  const centerY =
+    rect.height / 2;
+
+  const rotateY =
+    ((x - centerX) / centerX) * 12;
+
+  const rotateX =
+    ((centerY - y) / centerY) * 12;
+
+  const distance =
+    Math.sqrt(
+      Math.pow(x - centerX,2) +
+      Math.pow(y - centerY,2)
+    );
+
+  const intensity =
+    1 - Math.min(distance / 300,1);
+
+  wrapper.style.transform = `
+    rotateX(${rotateX}deg)
+    rotateY(${rotateY}deg)
+    scale(${1 + intensity * .06})
+  `;
+
+  hero.style.filter = `
+    drop-shadow(0 0 ${20 + intensity * 25}px rgba(255,220,0,.95))
+    drop-shadow(0 0 ${35 + intensity * 35}px rgba(255,40,40,.85))
+    drop-shadow(0 0 ${50 + intensity * 40}px rgba(0,120,255,.7))
+  `;
+
+});
+
+/* =========================
+   ENTRADA
+========================= */
+
+wrapper.addEventListener("mouseenter",()=>{
+
+  mouseInside = true;
+
+  spawnHandParticles();
+
+});
+
+/* =========================
+   SAÍDA
+========================= */
+
+wrapper.addEventListener("mouseleave",()=>{
+
+  mouseInside = false;
+
+  wrapper.style.transform = `
+    rotateX(0deg)
+    rotateY(0deg)
+    scale(1)
+  `;
+
+  hero.style.filter = `
+    drop-shadow(0 0 10px rgba(255,200,0,.3))
+  `;
+
+});
+
+/* =========================
+   FAÍSCAS AO REDOR
+========================= */
+
+setInterval(()=>{
+
+  const rect =
+    wrapper.getBoundingClientRect();
+
+  const randomX =
+    Math.random() * rect.width;
+
+  const randomY =
+    Math.random() * rect.height;
+
+  createParticle(randomX,randomY);
+
+},180);
+
+</script>
+
+</body>
+</html>
